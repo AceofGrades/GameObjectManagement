@@ -214,7 +214,7 @@ MonoBehaviour:
   newGameKey: 110
   saveKey: 115
   loadKey: 108
-  prefab: {fileID: 7176209040594506251, guid: ca50dcddb260ee747b6e3a87011c027d, type: 3}
+  shapeFactory: {fileID: 11400000, guid: 0135744a9a505494eb330aabfd4d3578, type: 2}
   storage: {fileID: 1560798638}
 --- !u!4 &484756792
 Transform:
