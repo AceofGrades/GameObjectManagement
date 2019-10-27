@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Shape : PersistableObjects
 {
+    MeshRenderer meshRenderer;
+
     public int ShapeId
     {
         get
@@ -32,15 +34,39 @@ public class Shape : PersistableObjects
 
     public void SetMaterial(Material material, int materialId)
     {
-        GetComponent<MeshRenderer>().material = material;
+        meshRenderer.material = material;
         MaterialId = materialId;
     }
+    static int colorPropertyId = Shader.PropertyToID("_Color");
+    static MaterialPropertyBlock sharedPropertyBlock;
 
     Color color;
 
     public void SetColor(Color color)
     {
         this.color = color;
-        GetComponent<MeshRenderer>().material.color = color;
+        if(sharedPropertyBlock == null)
+        {
+            sharedPropertyBlock = new MaterialPropertyBlock();
+        }
+        sharedPropertyBlock.SetColor(colorPropertyId, color);
+        meshRenderer.SetPropertyBlock(sharedPropertyBlock);
+    }
+
+    public override void Save(GameDataWriter writer)
+    {
+        base.Save(writer);
+        writer.Write(color);
+    }
+
+    public override void Load(GameDataReader reader)
+    {
+        base.Load(reader);
+        SetColor(reader.Version > 0 ? reader.ReadColor() : Color.white);
+    }
+
+    private void Awake()
+    {
+        meshRenderer = GetComponent<MeshRenderer>();
     }
 }

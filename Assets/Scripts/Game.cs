@@ -9,6 +9,7 @@ public class Game : PersistableObjects
     public KeyCode newGameKey = KeyCode.N;
     public KeyCode saveKey = KeyCode.S;
     public KeyCode loadKey = KeyCode.L;
+    public KeyCode destroyKey = KeyCode.X;
     public ShapeFactory shapeFactory;
     public PersistentStorage storage;
 
@@ -38,7 +39,7 @@ public class Game : PersistableObjects
         }
         else if (Input.GetKeyDown(saveKey))
         {
-            storage.Save(this);
+            storage.Save(this, saveVersion);
         }
         else if (Input.GetKeyDown(loadKey))
         {
@@ -54,6 +55,7 @@ public class Game : PersistableObjects
         t.localPosition = Random.insideUnitSphere * 5f;
         t.localRotation = Random.rotation;
         t.localScale = Random.Range(0.1f, 1f) * Vector3.one;
+        instance.SetColor(Random.ColorHSV(hueMin: 0f, hueMax: 1f, saturationMin: 0.5f, saturationMax: 1f, valueMin: 0.25f, valueMax: 1f, alphaMin: 1f, alphaMax: 1f));
         shapes.Add(instance);
     }
     private void BeginNewGame()
@@ -67,9 +69,24 @@ public class Game : PersistableObjects
         shapes.Clear();
     }
 
+    void DestroyShape()
+    {
+        if(shapes.Count > 0)
+        {
+            int index = Random.Range(0, shapes.Count);
+            Destroy(shapes[index].gameObject);
+            int lastIndex = shapes.Count - 1;
+            shapes[index] = shapes[lastIndex];
+            shapes.RemoveAt(lastIndex);
+        }
+        else if (Input.GetKeyDown(destroyKey))
+        {
+            DestroyShape();
+        }
+    }
+
     public override void Save(GameDataWriter writer)
     {
-        writer.Write(-saveVersion);
         writer.Write(shapes.Count);
         for (int i = 0; i < shapes.Count; i++)
         {
@@ -81,7 +98,7 @@ public class Game : PersistableObjects
 
     public override void Load(GameDataReader reader)
     {
-        int version = -reader.ReadInt();
+        int version = reader.Version;
         if(version > saveVersion)
         {
             Debug.LogError("Unsupported future save version " + version);
@@ -92,7 +109,7 @@ public class Game : PersistableObjects
         {
             int shapeId = version > 0 ? reader.ReadInt() : 0;
             int materialId = version > 0 ? reader.ReadInt() : 0;
-            Shape instance = shapeFactory.Get(shapeId);
+            Shape instance = shapeFactory.Get(shapeId, materialId);
             instance.Load(reader);
             shapes.Add(instance);
         }
