@@ -12,6 +12,9 @@ public class Game : PersistableObjects
     public KeyCode destroyKey = KeyCode.X;
     public ShapeFactory shapeFactory;
     public PersistentStorage storage;
+    public float CreationSpeed { get; set; }
+    public float DestructionSpeed { get; set; }
+    float creationProgress, destructionProgress;
 
     const int saveVersion = 1;
     
@@ -46,6 +49,19 @@ public class Game : PersistableObjects
             BeginNewGame();
             storage.Load(this);
         }
+        creationProgress += Time.deltaTime * CreationSpeed;
+        while (creationProgress >= 1f)
+        {
+            creationProgress -= 1f;
+            CreateShape();
+        }
+
+        destructionProgress += Time.deltaTime * DestructionSpeed;
+        while(destructionProgress >= 1f)
+        {
+            destructionProgress -= 1f;
+            DestroyShape();
+        }
     }
 
     private void CreateShape()
@@ -63,7 +79,7 @@ public class Game : PersistableObjects
         // Loop through all list items
         for (int i = 0; i < shapes.Count; i++)
         {
-            Destroy(shapes[i].gameObject);
+            shapeFactory.Reclaim(shapes[i]);
         }
         // Clear the list 
         shapes.Clear();
@@ -74,7 +90,7 @@ public class Game : PersistableObjects
         if(shapes.Count > 0)
         {
             int index = Random.Range(0, shapes.Count);
-            Destroy(shapes[index].gameObject);
+            shapeFactory.Reclaim(shapes[index]);
             int lastIndex = shapes.Count - 1;
             shapes[index] = shapes[lastIndex];
             shapes.RemoveAt(lastIndex);
