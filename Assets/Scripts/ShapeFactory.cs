@@ -70,6 +70,24 @@ public class ShapeFactory : ScriptableObject
             pools[i] = new List<Shape>();
             poolScene = SceneManager.CreateScene(name);
         }
+        if (Application.isEditor)
+        {
+            poolScene = SceneManager.GetSceneByName(name);
+            if (poolScene.isLoaded)
+            {
+                GameObject[] rootObjects = poolScene.GetRootGameObjects();
+                for (int i = 0; i < rootObjects.Length; i++)
+                {
+                    Shape pooledShape = rootObjects[i].GetComponent<Shape>();
+                    if (!pooledShape.gameObject.activeSelf)
+                    {
+                        pools[pooledShape.ShapeId].Add(pooledShape);
+                    }
+                }
+                return;
+            }
+        }
+        poolScene = SceneManager.CreateScene(name);
     }
     public void Reclaim(Shape shapeToRecycle)
     {
