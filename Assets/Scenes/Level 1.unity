@@ -142,7 +142,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5c728e522f4e3f43919b8435e113b4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnZone: {fileID: 1592968670}
+  spawnZone: {fileID: 0}
 --- !u!4 &541625306
 Transform:
   m_ObjectHideFlags: 0
@@ -252,10 +252,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1592968669}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ed950407b6f23de409c328e51ca8f3c6, type: 3}
+  m_Script: {fileID: 11500000, guid: e686f74fbb8204f439f28b75e0a79002, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  surfaceOnly: 1
+  surfaceOnly: 0
 --- !u!4 &1592968671
 Transform:
   m_ObjectHideFlags: 0
